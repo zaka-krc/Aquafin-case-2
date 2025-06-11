@@ -27,7 +27,7 @@ public class IndexController {
         if (jaar > 0) {
             data = neerslagDAO.findByJaar(jaar);
         } else {
-            data = neerslagDAO.findAllByOrderByJaarDescMaandAsc();
+            data = neerslagDAO.findByJaarAndMaand();
         }
 
         // Bereken seizoentotalen en check risico
@@ -48,7 +48,7 @@ public class IndexController {
         }
 
         model.addAttribute("seizoen_data", seizoenTotalen);
-        model.addAttribute("seizoen_risicos", seizoenRisicos);
+        model.addAttribute("seizoen_risico", seizoenRisicos);
         model.addAttribute("geselecteerd_jaar", jaar);
 
         return "index";
