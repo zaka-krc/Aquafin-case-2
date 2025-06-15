@@ -5,16 +5,17 @@ import be.ehb.aquafin.model.MaandDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class NeerslagService {
 
     @Autowired
     private MaandDAO dao;
+
+    @Autowired
+    private WeerAPIService apiService;
+
 
     public List<Maand> getAlle() {
         return (List<Maand>) dao.findAll();
@@ -28,15 +29,24 @@ public class NeerslagService {
         dao.save(maand);
     }
 
-    // Seizoen check - simpel
+    // Real-time data van API gebruiken voor huidige/recente jaren
     public Map<String, Object> checkRisico(int jaar) {
         Map<String, Object> result = new HashMap<>();
-        List<Maand> data = dao.findByJaar(jaar);
+        List<Maand> data;
 
-        double winter = getMaanden(data, Arrays.asList(12, 1, 2)); // Dec, Jan, Feb
-        double lente = getMaanden(data, Arrays.asList(3, 4, 5));   // Mrt, Apr, Mei
-        double zomer = getMaanden(data, Arrays.asList(6, 7, 8));   // Jun, Jul, Aug
-        double herfst = getMaanden(data, Arrays.asList(9, 10, 11)); // Sep, Okt, Nov
+        // Voor recente jaren (2024+): gebruik API data
+        if (jaar >= 2024) {
+            System.out.println("Ophalen van real-time API data voor " + jaar);
+            data = getAPIDataAlsNeerslagList(jaar);
+        } else {
+            // Voor oudere jaren: gebruik database
+            data = dao.findByJaar(jaar);
+        }
+
+        double winter = getMaanden(data, Arrays.asList(12, 1, 2));
+        double lente = getMaanden(data, Arrays.asList(3, 4, 5));
+        double zomer = getMaanden(data, Arrays.asList(6, 7, 8));
+        double herfst = getMaanden(data, Arrays.asList(9, 10, 11));
 
         result.put("winter", winter > 300 ? "RISICO" : "OK");
         result.put("lente", lente > 250 ? "RISICO" : "OK");
@@ -51,14 +61,49 @@ public class NeerslagService {
         return result;
     }
 
+    private List<Maand> getAPIDataAlsNeerslagList(int jaar) {
+        List<Maand> apiData = new ArrayList<>();
+        Map<Integer, Double> jaarData = apiService.getJaarData(jaar);
+
+        for (Map.Entry<Integer, Double> entry : jaarData.entrySet()) {
+            apiData.add(new Maand(jaar, entry.getKey(), entry.getValue()));
+        }
+
+        return apiData;
+    }
+
     private double getMaanden(List<Maand> data, List<Integer> maanden) {
         double totaal = 0;
-        for (Maand m : data) {
-            if (maanden.contains(m.getMaand())) {
-                totaal += m.getNeerslag();
+        for (Maand n : data) {
+            if (maanden.contains(n.getMaand())) {
+                totaal += n.getNeerslag();
             }
         }
         return totaal;
+    }
+
+    // Synchroniseer API data naar database
+    public void syncAPIData(int jaar) {
+        Map<Integer, Double> apiData = apiService.getJaarData(jaar);
+
+        for (Map.Entry<Integer, Double> entry : apiData.entrySet()) {
+            int maand = entry.getKey();
+            double mm = entry.getValue();
+
+            // Check of data al bestaat
+            List<Maand> bestaande = dao.findByJaarAndMaand(jaar, maand);
+            if (bestaande.isEmpty()) {
+                // Nieuwe data toevoegen
+                dao.save(new Maand(jaar, maand, mm));
+                System.out.println("API data toegevoegd: " + jaar + "-" + maand + " = " + mm + "mm");
+            } else {
+                // Bestaande data updaten
+                Maand bestaand = bestaande.get(0);
+                bestaand.setNeerslag(mm);
+                dao.save(bestaand);
+                System.out.println("API data geupdate: " + jaar + "-" + maand + " = " + mm + "mm");
+            }
+        }
     }
 
     // Historische data laden
