@@ -17,7 +17,7 @@ public class NeerslagController {
     @Autowired
     private NeerslagService service;
 
-    @GetMapping("/")
+    @GetMapping("/dashboard")
     public String home(Model model) {
         service.laadData();
 
@@ -25,7 +25,7 @@ public class NeerslagController {
         model.addAttribute("risico", risico2024);
         model.addAttribute("jaar", 2024);
 
-        return "index";
+        return "dashboard";
     }
 
     @GetMapping("/jaar/{jaar}")
