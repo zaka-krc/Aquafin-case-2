@@ -72,7 +72,9 @@ public class WeerAPIService {
             // Som van alle dagen in de maand
             totaalNeerslag = dagTotalen.values().stream().mapToDouble(Double::doubleValue).sum();
 
-            System.out.println("API data voor " + jaar + "-" + maand + ": " + totaalNeerslag + "mm");
+            // Round to 1 decimal for logging
+            double afgerond = Math.round(totaalNeerslag * 10.0) / 10.0;
+            System.out.println("API data voor " + jaar + "-" + maand + ": " + afgerond + "mm");
             return totaalNeerslag;
 
         } catch (Exception e) {
