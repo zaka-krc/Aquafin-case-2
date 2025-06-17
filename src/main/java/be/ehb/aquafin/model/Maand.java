@@ -65,4 +65,17 @@ public class Maand {
         if (maand >= 6 && maand <= 8) return "Zomer";
         return "Herfst";
     }
+
+    public String getMaandNaam() {
+        String[] maandNamen = {
+                "Januari", "Februari", "Maart", "April",
+                "Mei", "Juni", "Juli", "Augustus",
+                "September", "Oktober", "November", "December"
+        };
+
+        if (maand >= 1 && maand <= 12) {
+            return maandNamen[maand - 1];
+        }
+        return "Onbekend";
+    }
 }

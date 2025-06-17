@@ -34,7 +34,7 @@ public class NeerslagController {
         model.addAttribute("risico", risico);
         model.addAttribute("jaar", jaar);
 
-        return "dasboard";
+        return "dashboard";
     }
 
     @GetMapping("/voorspelling")
@@ -95,8 +95,8 @@ public class NeerslagController {
     @PostMapping("/data")
     public String voegToe(@RequestParam int jaar,
                           @RequestParam int maand,
-                          @RequestParam double mm) {
-        service.save(new Maand(jaar, maand, mm));
+                          @RequestParam double neerslag) {
+        service.save(new Maand(jaar, maand, neerslag));
         return "redirect:/data";
     }
 }

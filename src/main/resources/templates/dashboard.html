@@ -31,6 +31,49 @@
             <h2 class="year-title">2025</h2>
             <p class="year-subtitle">Gemeten neerslag per seizoen</p>
 
+            <!-- Thymeleaf template for data rendering -->
+            <table>
+                <thead>
+                <tr>
+                    <th>Some Field</th>
+                    <th>Another Field</th>
+                    <!-- ...other headers... -->
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${apiData}">
+                    <td th:text="${item.someField}"></td>
+                    <td th:text="${item.anotherField}"></td>
+                    <!-- ...other fields... -->
+                </tr>
+                </tbody>
+            </table>
+            <div class="data-grid">
+                <div class="season-selector">
+                    <label>Seizoen</label>
+                    <select>
+                        <option>Value</option>
+                        <option>Lente</option>
+                        <option>Zomer</option>
+                        <option>Herfst</option>
+                        <option>Winter</option>
+                    </select>
+                </div>
+
+                <div class="data-table highlighted">
+                    <div class="table-row">
+                        <span>Lente</span>
+                    </div>
+                    <div class="table-row">
+                        <span>Zomer</span>
+                    </div>
+                    <div class="table-row">
+                        <span>Herfst</span>
+                    </div>
+                    <div class="table-row">
+                        <span>Winter</span>
+                    </div>
+
             <div class="data-grid">
                 <div class="month-selector">
                     <label>Maand</label>
