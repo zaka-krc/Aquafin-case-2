@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="nl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aquafin - Neerslag Voorspelling</title>
+    <link rel="stylesheet" href="/aquafin-styles.css">
+</head>
+<body>
+<div class="container">
+    <!-- Header met logo en navigatie -->
+    <header class="header">
+        <div class="logo-container">
+            <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M30 40 Q40 20, 50 40 T70 40" stroke="#0099CC" stroke-width="4" fill="none"/>
+                <path d="M25 50 Q35 30, 45 50 T65 50" stroke="#0099CC" stroke-width="4" fill="none"/>
+                <path d="M35 60 Q45 40, 55 60 T75 60" stroke="#0099CC" stroke-width="4" fill="none"/>
+            </svg>
+            <h1>Aquafin</h1>
+        </div>
+        <nav class="nav-buttons">
+            <a href="/data" class="nav-btn">Admin panel</a>
+            <a href="/dashboard" class="nav-btn">Dashboard</a>
+            <a href="/voorspelling" class="nav-btn active">Voorspelling</a>
+        </nav>
+    </header>
+
+    <!-- Main content -->
+    <main class="main-content">
+        <section class="year-section">
+            <h2 class="year-title">Neerslag Voorspelling</h2>
+            <p class="year-subtitle">Voer maandelijkse neerslagwaarden in om een risicoanalyse te maken</p>
+
+            <!-- Voorspelling Form -->
+            <form method="POST" action="/voorspelling" style="max-width: 800px; margin: 0 auto;">
+                <div style="margin-bottom: 20px;">
+                    <label for="jaar" style="display: block; margin-bottom: 5px;">Jaar:</label>
+                    <input type="number" id="jaar" name="jaar" value="2025" min="2020" max="2030" required
+                           style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                    <div>
+                        <label for="jan">Januari (mm):</label>
+                        <input type="number" id="jan" name="jan" step="0.1" min="0" placeholder="0.0"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div>
+                        <label for="feb">Februari (mm):</label>
+                        <input type="number" id="feb" name="feb" step="0.1" min="0" placeholder="0.0"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div>
+                        <label for="mrt">Maart (mm):</label>
+                        <input type="number" id="mrt" name="mrt" step="0.1" min="0" placeholder="0.0"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div>
+                        <label for="apr">April (mm):</label>
+                        <input type="number" id="apr" name="apr" step="0.1" min="0" placeholder="0.0"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div>
+                        <label for="mei">Mei (mm):</label>
+                        <input type="number" id="mei" name="mei" step="0.1" min="0" placeholder="0.0"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div>
+                        <label for="jun">Juni (mm):</label>
+                        <input type="number" id="jun" name="jun" step="0.1" min="0" placeholder="0.0"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div>
+                        <label for="jul">Juli (mm):</label>
+                        <input type="number" id="jul" name="jul" step="0.1" min="0" placeholder="0.0"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div>
+                        <label for="aug">Augustus (mm):</label>
+                        <input type="number" id="aug" name="aug" step="0.1" min="0" placeholder="0.0"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div>
+                        <label for="sep">September (mm):</label>
+                        <input type="number" id="sep" name="sep" step="0.1" min="0" placeholder="0.0"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div>
+                        <label for="okt">Oktober (mm):</label>
+                        <input type="number" id="okt" name="okt" step="0.1" min="0" placeholder="0.0"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div>
+                        <label for="nov">November (mm):</label>
+                        <input type="number" id="nov" name="nov" step="0.1" min="0" placeholder="0.0"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    <div>
+                        <label for="dec">December (mm):</label>
+                        <input type="number" id="dec" name="dec" step="0.1" min="0" placeholder="0.0"
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                </div>
+
+                <div style="text-align: center;">
+                    <button type="submit" class="simulation-btn">Bereken Voorspelling</button>
+                </div>
+            </form>
+
+            <!-- Resultaten (alleen tonen als er data is) -->
+            <div th:if="${winter != null}" style="margin-top: 40px;">
+                <h3 style="text-align: center; margin-bottom: 30px;">Voorspelling Resultaten voor <span th:text="${jaar}">2025</span></h3>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div class="data-table" th:style="${winterRisico == 'GEVAAR!'} ? 'border: 2px solid #ff6b6b; background-color: #fff5f5;' : ''">
+                        <h4>Winter</h4>
+                        <div class="table-row">
+                            <span>Totaal neerslag:</span>
+                            <span th:text="${winter} + ' mm'">0 mm</span>
+                        </div>
+                        <div class="table-row">
+                            <span>Grenswaarde:</span>
+                            <span>300 mm</span>
+                        </div>
+                        <div class="table-row">
+                            <span>Status:</span>
+                            <span th:text="${winterRisico}"
+                                  th:style="${winterRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green; font-weight: bold;'">OK</span>
+                        </div>
+                    </div>
+
+                    <div class="data-table" th:style="${lenteRisico == 'GEVAAR!'} ? 'border: 2px solid #ff6b6b; background-color: #fff5f5;' : ''">
+                        <h4>Lente</h4>
+                        <div class="table-row">
+                            <span>Totaal neerslag:</span>
+                            <span th:text="${lente} + ' mm'">0 mm</span>
+                        </div>
+                        <div class="table-row">
+                            <span>Grenswaarde:</span>
+                            <span>250 mm</span>
+                        </div>
+                        <div class="table-row">
+                            <span>Status:</span>
+                            <span th:text="${lenteRisico}"
+                                  th:style="${lenteRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green; font-weight: bold;'">OK</span>
+                        </div>
+                    </div>
+
+                    <div class="data-table" th:style="${zomerRisico == 'GEVAAR!'} ? 'border: 2px solid #ff6b6b; background-color: #fff5f5;' : ''">
+                        <h4>Zomer</h4>
+                        <div class="table-row">
+                            <span>Totaal neerslag:</span>
+                            <span th:text="${zomer} + ' mm'">0 mm</span>
+                        </div>
+                        <div class="table-row">
+                            <span>Grenswaarde:</span>
+                            <span>260 mm</span>
+                        </div>
+                        <div class="table-row">
+                            <span>Status:</span>
+                            <span th:text="${zomerRisico}"
+                                  th:style="${zomerRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green; font-weight: bold;'">OK</span>
+                        </div>
+                    </div>
+
+                    <div class="data-table" th:style="${herfstRisico == 'GEVAAR!'} ? 'border: 2px solid #ff6b6b; background-color: #fff5f5;' : ''">
+                        <h4>Herfst</h4>
+                        <div class="table-row">
+                            <span>Totaal neerslag:</span>
+                            <span th:text="${herfst} + ' mm'">0 mm</span>
+                        </div>
+                        <div class="table-row">
+                            <span>Grenswaarde:</span>
+                            <span>280 mm</span>
+                        </div>
+                        <div class="table-row">
+                            <span>Status:</span>
+                            <span th:text="${herfstRisico}"
+                                  th:style="${herfstRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green; font-weight: bold;'">OK</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+</body>
+</html>
