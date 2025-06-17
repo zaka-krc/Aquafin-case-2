@@ -67,24 +67,24 @@
                 <div style="background-color: #e3f2fd; padding: 20px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
                     <h3>Voorspelling voor 2025</h3>
                     <p style="font-size: 18px; margin: 10px 0;">
-                        Gebaseerd op <strong th:text="${voorspelling.aantalJarenData}">5</strong> jaar historische data
+                        Gebaseerd op <strong th:text="${voorspelling['aantalJarenData']}">5</strong> jaar historische data
                     </p>
 
                     <!-- Alleen tonen als totaalJaar bestaat (bij alle maanden) -->
-                    <div th:if="${voorspelling.totaalJaar != null}" style="margin-top: 15px;">
+                    <div th:if="${voorspelling['totaalJaar'] != null}" style="margin-top: 15px;">
                         <p style="font-size: 20px; font-weight: bold;"
-                           th:style="${voorspelling.totaalJaarRisico == 'GEVAAR!'} ? 'color: red;' : 'color: green;'">
-                            Jaar risico: <span th:text="${voorspelling.totaalJaarRisico}">OK</span>
+                           th:style="${voorspelling['totaalJaarRisico'] == 'GEVAAR!'} ? 'color: red;' : 'color: green;'">
+                            Jaar risico: <span th:text="${voorspelling['totaalJaarRisico']}">OK</span>
                         </p>
                         <p style="font-size: 16px; color: #666;">
-                            Verwachte jaarneerslag: <strong th:text="${#numbers.formatDecimal(voorspelling.totaalJaar, 1, 1)} + ' mm'">0.0 mm</strong>
+                            Verwachte jaarneerslag: <strong th:text="${#numbers.formatDecimal(voorspelling['totaalJaar'], 1, 1)} + ' mm'">0.0 mm</strong>
                         </p>
                     </div>
                 </div>
 
                 <!-- Maandelijkse voorspellingen -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                    <div th:each="maandData : ${voorspelling.maanden}"
+                    <div th:each="maandData : ${voorspelling['maanden']}"
                          class="data-table"
                          th:style="${maandData.risico == 'GEVAAR!'} ? 'border: 2px solid #ff6b6b; background-color: #fff5f5;' : ''">
                         <h4 th:text="${maandData.naam}">Januari</h4>
@@ -124,10 +124,10 @@
                 </div>
 
                 <!-- Seizoensoverzicht (alleen als seizoenen bestaat) -->
-                <div th:if="${voorspelling.seizoenen != null}" style="margin-top: 30px;">
+                <div th:if="${voorspelling['seizoenen'] != null}" style="margin-top: 30px;">
                     <h3>Seizoensoverzicht 2025</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                        <div class="data-table" th:each="seizoen : ${voorspelling.seizoenen}">
+                        <div class="data-table" th:each="seizoen : ${voorspelling['seizoenen']}">
                             <h4 th:text="${seizoen.naam}">Winter</h4>
                             <div class="table-row">
                                 <span>Totaal verwacht:</span>
