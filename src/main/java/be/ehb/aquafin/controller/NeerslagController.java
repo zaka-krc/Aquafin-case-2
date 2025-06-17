@@ -34,7 +34,7 @@ public class NeerslagController {
         model.addAttribute("risico", risico);
         model.addAttribute("jaar", jaar);
 
-        return "index";
+        return "dasboard";
     }
 
     @GetMapping("/voorspelling")
