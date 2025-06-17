@@ -17,9 +17,205 @@ public class NeerslagService {
     @Autowired
     private WeerAPIService apiService;
 
-
     public List<Maand> getAlle() {
         return (List<Maand>) dao.findAll();
+    }
+
+    // Nieuwe methode: Genereer voorspelling per maand voor 2025
+    public Map<String, Object> genereerMaandVoorspelling(int voorspelJaar, int maand) {
+        Map<String, Object> voorspelling = new HashMap<>();
+        List<Map<String, Object>> maandVoorspellingen = new ArrayList<>();
+
+        // Haal historische data op (laatste 5 jaar)
+        int huidigJaar = java.time.LocalDate.now().getYear();
+        int startJaar = Math.max(2020, huidigJaar - 5);
+
+        // Als maand = 0, bereken voor alle maanden
+        if (maand == 0) {
+            for (int m = 1; m <= 12; m++) {
+                Map<String, Object> maandData = berekenMaandVoorspelling(m, startJaar, huidigJaar);
+                maandVoorspellingen.add(maandData);
+            }
+
+            // Bereken seizoensoverzicht
+            List<Map<String, Object>> seizoenen = berekenSeizoensTotalen(maandVoorspellingen);
+            voorspelling.put("seizoenen", seizoenen);
+
+            // Bereken jaartotaal
+            double totaalJaar = maandVoorspellingen.stream()
+                    .mapToDouble(m -> (Double) m.get("voorspelling"))
+                    .sum();
+            voorspelling.put("totaalJaar", Math.round(totaalJaar * 10.0) / 10.0);
+            voorspelling.put("totaalJaarRisico", totaalJaar > 1000 ? "GEVAAR!" : "OK");
+
+        } else {
+            // Bereken voor specifieke maand
+            Map<String, Object> maandData = berekenMaandVoorspelling(maand, startJaar, huidigJaar);
+            maandVoorspellingen.add(maandData);
+        }
+
+        voorspelling.put("maanden", maandVoorspellingen);
+        voorspelling.put("aantalJarenData", Math.min(5, huidigJaar - startJaar));
+
+        return voorspelling;
+    }
+
+    private Map<String, Object> berekenMaandVoorspelling(int maand, int startJaar, int huidigJaar) {
+        Map<String, Object> result = new HashMap<>();
+        List<Double> historischeData = new ArrayList<>();
+
+        // Verzamel historische data voor deze maand
+        for (int jaar = startJaar; jaar < huidigJaar; jaar++) {
+            List<Maand> maandData = getMaandenVoorJaar(jaar);
+
+            maandData.stream()
+                    .filter(m -> m.getMaand() == maand)
+                    .findFirst()
+                    .ifPresent(m -> historischeData.add(m.getNeerslag()));
+        }
+
+        // Bereken statistieken
+        double gemiddelde = historischeData.stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0.0);
+
+        // Bereken trend
+        double trend = berekenTrend(historischeData);
+        double voorspeldeWaarde = gemiddelde + (trend * 1); // 1 jaar vooruit voor 2025
+        voorspeldeWaarde = Math.max(0, voorspeldeWaarde);
+
+        // Bepaal grenswaarde per maand (gebaseerd op seizoen)
+        double grenswaarde = bepaalMaandGrenswaarde(maand);
+
+        // Bereken trend percentage
+        double trendPercentage = gemiddelde > 0 ? (trend / gemiddelde) * 100 : 0;
+        String trendString = (trendPercentage >= 0 ? "+" : "") +
+                Math.round(trendPercentage) + "%";
+
+        // Maak result object
+        result.put("maandNummer", maand);
+        result.put("naam", getMaandNaam(maand));
+        result.put("voorspelling", Math.round(voorspeldeWaarde * 10.0) / 10.0);
+        result.put("gemiddelde", Math.round(gemiddelde * 10.0) / 10.0);
+        result.put("trend", trendString);
+        result.put("grenswaarde", grenswaarde);
+        result.put("risico", voorspeldeWaarde > grenswaarde ? "GEVAAR!" : "OK");
+        result.put("seizoen", getSeizoenVoorMaand(maand));
+
+        return result;
+    }
+
+    private double bepaalMaandGrenswaarde(int maand) {
+        // Grenswaarden per maand gebaseerd op seizoensnormen
+        // Winter: 300mm/3 = 100mm per maand
+        // Lente: 250mm/3 = 83mm per maand
+        // Zomer: 260mm/3 = 87mm per maand
+        // Herfst: 280mm/3 = 93mm per maand
+
+        switch(maand) {
+            case 12: case 1: case 2:  // Winter
+                return 100.0;
+            case 3: case 4: case 5:   // Lente
+                return 83.0;
+            case 6: case 7: case 8:   // Zomer
+                return 87.0;
+            case 9: case 10: case 11: // Herfst
+                return 93.0;
+            default:
+                return 90.0;
+        }
+    }
+
+    private String getMaandNaam(int maand) {
+        String[] maandNamen = {
+                "Januari", "Februari", "Maart", "April",
+                "Mei", "Juni", "Juli", "Augustus",
+                "September", "Oktober", "November", "December"
+        };
+        return (maand >= 1 && maand <= 12) ? maandNamen[maand - 1] : "Onbekend";
+    }
+
+    private String getSeizoenVoorMaand(int maand) {
+        if (maand == 12 || maand == 1 || maand == 2) return "Winter";
+        if (maand >= 3 && maand <= 5) return "Lente";
+        if (maand >= 6 && maand <= 8) return "Zomer";
+        if (maand >= 9 && maand <= 11) return "Herfst";
+        return "";
+    }
+
+    private List<Map<String, Object>> berekenSeizoensTotalen(List<Map<String, Object>> maandVoorspellingen) {
+        List<Map<String, Object>> seizoenen = new ArrayList<>();
+
+        // Winter
+        Map<String, Object> winter = new HashMap<>();
+        winter.put("naam", "Winter");
+        double winterTotaal = maandVoorspellingen.stream()
+                .filter(m -> Arrays.asList(12, 1, 2).contains(m.get("maandNummer")))
+                .mapToDouble(m -> (Double) m.get("voorspelling"))
+                .sum();
+        winter.put("totaal", Math.round(winterTotaal * 10.0) / 10.0);
+        winter.put("grenswaarde", 300);
+        winter.put("risico", winterTotaal > 300 ? "GEVAAR!" : "OK");
+        seizoenen.add(winter);
+
+        // Lente
+        Map<String, Object> lente = new HashMap<>();
+        lente.put("naam", "Lente");
+        double lenteTotaal = maandVoorspellingen.stream()
+                .filter(m -> Arrays.asList(3, 4, 5).contains(m.get("maandNummer")))
+                .mapToDouble(m -> (Double) m.get("voorspelling"))
+                .sum();
+        lente.put("totaal", Math.round(lenteTotaal * 10.0) / 10.0);
+        lente.put("grenswaarde", 250);
+        lente.put("risico", lenteTotaal > 250 ? "GEVAAR!" : "OK");
+        seizoenen.add(lente);
+
+        // Zomer
+        Map<String, Object> zomer = new HashMap<>();
+        zomer.put("naam", "Zomer");
+        double zomerTotaal = maandVoorspellingen.stream()
+                .filter(m -> Arrays.asList(6, 7, 8).contains(m.get("maandNummer")))
+                .mapToDouble(m -> (Double) m.get("voorspelling"))
+                .sum();
+        zomer.put("totaal", Math.round(zomerTotaal * 10.0) / 10.0);
+        zomer.put("grenswaarde", 260);
+        zomer.put("risico", zomerTotaal > 260 ? "GEVAAR!" : "OK");
+        seizoenen.add(zomer);
+
+        // Herfst
+        Map<String, Object> herfst = new HashMap<>();
+        herfst.put("naam", "Herfst");
+        double herfstTotaal = maandVoorspellingen.stream()
+                .filter(m -> Arrays.asList(9, 10, 11).contains(m.get("maandNummer")))
+                .mapToDouble(m -> (Double) m.get("voorspelling"))
+                .sum();
+        herfst.put("totaal", Math.round(herfstTotaal * 10.0) / 10.0);
+        herfst.put("grenswaarde", 280);
+        herfst.put("risico", herfstTotaal > 280 ? "GEVAAR!" : "OK");
+        seizoenen.add(herfst);
+
+        return seizoenen;
+    }
+
+    private double berekenTrend(List<Double> data) {
+        if (data.size() < 2) return 0.0;
+
+        // Simpele lineaire trend berekening
+        double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+        int n = data.size();
+
+        for (int i = 0; i < n; i++) {
+            sumX += i;
+            sumY += data.get(i);
+            sumXY += i * data.get(i);
+            sumX2 += i * i;
+        }
+
+        // Bereken helling (trend per jaar)
+        double helling = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+
+        return helling;
     }
 
     public List<Maand> getJaar(int jaar) {
@@ -65,7 +261,6 @@ public class NeerslagService {
         return jaren;
     }
 
-
     // Updated checkRisico methode met correcte keys
     public Map<String, Object> checkRisico(int jaar) {
         Map<String, Object> result = new HashMap<>();
@@ -98,7 +293,6 @@ public class NeerslagService {
 
         return result;
     }
-
 
     private List<Maand> getAPIDataAlsNeerslagList(int jaar) {
         List<Maand> apiData = new ArrayList<>();
@@ -144,7 +338,6 @@ public class NeerslagService {
             }
         }
     }
-
 
     // Historische data laden
     public void laadData() {
