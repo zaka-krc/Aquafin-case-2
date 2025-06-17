@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="nl" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,169 +19,79 @@
             <h1>Aquafin</h1>
         </div>
         <nav class="nav-buttons">
-            <button class="nav-btn">Admin panel</button>
-            <button class="nav-btn active">Simulatie</button>
-            <button class="nav-btn">Grafiek</button>
+            <a href="/data" class="nav-btn">Admin panel</a>
+            <a href="/dashboard" class="nav-btn active">Dashboard</a>
+            <a href="/voorspelling" class="nav-btn">Voorspelling</a>
         </nav>
     </header>
     <!-- Main content -->
     <main class="main-content">
-        <!-- 2025 Section -->
+        <!-- Jaar Section -->
         <section class="year-section">
-            <h2 class="year-title">2025</h2>
+            <h2 class="year-title" th:text="${jaar}">2024</h2>
             <p class="year-subtitle">Gemeten neerslag per seizoen</p>
 
             <div class="data-grid">
-                <div class="month-selector">
-                    <label>Maand</label>
-                    <select>
-                        <option>Value</option>
-                        <option>Maand 1</option>
-                        <option>Maand 2</option>
-                        <option>Maand 3</option>
+                <div class="season-selector">
+                    <label>Jaar selecteren</label>
+                    <select onchange="window.location.href='/jaar/' + this.value">
+                        <option th:value="${jaar}" th:text="${jaar}" selected>Huidig jaar</option>
+                        <option th:each="beschikbaarJaar : ${beschikbareJaren}"
+                                th:if="${beschikbaarJaar != jaar}"
+                                th:value="${beschikbaarJaar}"
+                                th:text="${beschikbaarJaar}">Jaar</option>
                     </select>
                 </div>
 
                 <div class="data-table highlighted">
                     <div class="table-row">
-                        <span>Maand 1</span>
+                        <span>Winter</span>
+                        <span th:text="${risico.winter} + ' mm'">0 mm</span>
+                        <span th:text="${risico.winterRisico}"
+                              th:style="${risico.winterRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green;'">OK</span>
                     </div>
                     <div class="table-row">
-                        <span>Maand 2</span>
+                        <span>Lente</span>
+                        <span th:text="${risico.lente} + ' mm'">0 mm</span>
+                        <span th:text="${risico.lenteRisico}"
+                              th:style="${risico.lenteRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green;'">OK</span>
                     </div>
                     <div class="table-row">
-                        <span>Maand 3</span>
+                        <span>Zomer</span>
+                        <span th:text="${risico.zomer} + ' mm'">0 mm</span>
+                        <span th:text="${risico.zomerRisico}"
+                              th:style="${risico.zomerRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green;'">OK</span>
+                    </div>
+                    <div class="table-row">
+                        <span>Herfst</span>
+                        <span th:text="${risico.herfst} + ' mm'">0 mm</span>
+                        <span th:text="${risico.herfstRisico}"
+                              th:style="${risico.herfstRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green;'">OK</span>
                     </div>
                 </div>
 
                 <div class="average-column">
-                    <div class="header">gemiddelde boven de grens</div>
+                    <div class="header">Risico Status</div>
+                    <div style="margin-top: 20px;">
+                        <p><strong>Grenswaarden:</strong></p>
+                        <p>Winter: >300mm</p>
+                        <p>Lente: >250mm</p>
+                        <p>Zomer: >260mm</p>
+                        <p>Herfst: >280mm</p>
+                    </div>
                 </div>
             </div>
 
-            <div class="data-display">
-                <div class="data-table">
-                    <div class="table-row">
-                        <span>Maand 1</span>
-                        <span></span>
-                    </div>
-                    <div class="table-row">
-                        <span>Maand 2</span>
-                        <span>gemiddelde</span>
-                    </div>
-                    <div class="table-row">
-                        <span>Maand 3</span>
-                        <span></span>
-                    </div>
-                </div>
-
-                <div class="data-table">
-                    <div class="table-row">
-                        <span>Maand 1</span>
-                        <span></span>
-                    </div>
-                    <div class="table-row">
-                        <span>Maand 2</span>
-                        <span>voorlopige gemiddelde</span>
-                    </div>
-                    <div class="table-row">
-                        <span>Maand 3</span>
-                        <span></span>
+            <!-- Maandelijkse data -->
+            <div class="data-display" th:if="${maanden != null and !maanden.isEmpty()}">
+                <h3 style="margin-top: 30px; margin-bottom: 20px;">Maandelijkse neerslag</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div class="data-table" th:each="maand : ${maanden}">
+                        <div class="table-row">
+                            <span th:text="${maand.getMaandNaam()}">Maand</span>
+                            <span th:text="${maand.neerslag} + ' mm'">0 mm</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
-
-        <!-- Vorige data Section -->
-        <section class="previous-data">
-            <h2 class="section-title">Vorige data</h2>
-            <p class="section-subtitle">Gemeten neerslag per jaar</p>
-
-            <div class="data-grid">
-                <div class="month-selector">
-                    <label>Maand</label>
-                    <select>
-                        <option>Value</option>
-                        <option>Jaar</option>
-                    </select>
-                </div>
-
-                <div class="year-selector">
-                    <h3>Jaar</h3>
-                </div>
-            </div>
-
-            <div class="data-display">
-                <div class="data-table">
-                    <div class="table-row">
-                        <span>Maand 1</span>
-                        <span></span>
-                    </div>
-                    <div class="table-row">
-                        <span>Maand 2</span>
-                        <span>gemiddelde</span>
-                    </div>
-                    <div class="table-row">
-                        <span>Maand 3</span>
-                        <span></span>
-                    </div>
-                </div>
-
-                <div class="data-table">
-                    <div class="table-row">
-                        <span>Maand 1</span>
-                        <span></span>
-                    </div>
-                    <div class="table-row">
-                        <span>Maand 2</span>
-                        <span>gemiddelde</span>
-                    </div>
-                    <div class="table-row">
-                        <span>Maand 3</span>
-                        <span></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="data-display">
-                <h3 class="jaar-title">Jaar</h3>
-                <div class="data-table">
-                    <div class="table-row">
-                        <span>Maand 1</span>
-                        <span></span>
-                    </div>
-                    <div class="table-row">
-                        <span>Maand 2</span>
-                        <span>gemiddelde</span>
-                    </div>
-                    <div class="table-row">
-                        <span>Maand 3</span>
-                        <span></span>
-                    </div>
-                </div>
-
-                <div class="data-table">
-                    <div class="table-row">
-                        <span>Maand 1</span>
-                        <span></span>
-                    </div>
-                    <div class="table-row">
-                        <span>Maand 2</span>
-                        <span>gemiddelde</span>
-                    </div>
-                    <div class="table-row">
-                        <span>Maand 3</span>
-                        <span></span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Simulatie button -->
-        <div class="simulation-container">
-            <button class="simulation-btn">Maak een simulatie</button>
-        </div>
-    </main>
-</div>
-</body>
-</html>
