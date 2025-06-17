@@ -69,7 +69,9 @@
                     <p style="font-size: 18px; margin: 10px 0;">
                         Gebaseerd op <strong th:text="${voorspelling.aantalJarenData}">5</strong> jaar historische data
                     </p>
-                    <div th:if="${voorspelling.totaalJaarRisico != null}" style="margin-top: 15px;">
+
+                    <!-- Alleen tonen als totaalJaar bestaat (bij alle maanden) -->
+                    <div th:if="${voorspelling.totaalJaar != null}" style="margin-top: 15px;">
                         <p style="font-size: 20px; font-weight: bold;"
                            th:style="${voorspelling.totaalJaarRisico == 'GEVAAR!'} ? 'color: red;' : 'color: green;'">
                             Jaar risico: <span th:text="${voorspelling.totaalJaarRisico}">OK</span>
@@ -121,8 +123,8 @@
                     </div>
                 </div>
 
-                <!-- Seizoensoverzicht (als alle maanden geselecteerd) -->
-                <div th:if="${voorspelling.containsKey('seizoenen')}" style="margin-top: 30px;">
+                <!-- Seizoensoverzicht (alleen als seizoenen bestaat) -->
+                <div th:if="${voorspelling.seizoenen != null}" style="margin-top: 30px;">
                     <h3>Seizoensoverzicht 2025</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
                         <div class="data-table" th:each="seizoen : ${voorspelling.seizoenen}">
