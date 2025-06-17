@@ -47,6 +47,12 @@ public class WeerAPIService {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+            if (response.statusCode() != 200) {
+                System.out.println("API error: HTTP " + response.statusCode());
+                System.out.println("Response body: " + response.body());
+                return 0.0;
+            }
+
             // JSON verwerken
             JsonNode root = mapper.readTree(response.body());
             JsonNode features = root.get("features");
