@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class NeerslagService {
@@ -29,7 +30,43 @@ public class NeerslagService {
         dao.save(maand);
     }
 
-    // Real-time data van API gebruiken voor huidige/recente jaren
+    // Nieuwe methode: haal maanden op voor een specifiek jaar
+    public List<Maand> getMaandenVoorJaar(int jaar) {
+        if (jaar >= 2024) {
+            // Voor recente jaren, gebruik API data
+            return getAPIDataAlsNeerslagList(jaar);
+        } else {
+            // Voor oudere jaren, gebruik database
+            return dao.findByJaar(jaar);
+        }
+    }
+
+    // Nieuwe methode: haal alle beschikbare jaren op
+    public List<Integer> getBeschikbareJaren() {
+        List<Integer> jaren = new ArrayList<>();
+
+        // Haal jaren uit database
+        List<Maand> alleMaanden = getAlle();
+        Set<Integer> uniqueJaren = alleMaanden.stream()
+                .map(Maand::getJaar)
+                .collect(Collectors.toSet());
+
+        jaren.addAll(uniqueJaren);
+
+        // Voeg huidige jaar toe als het nog niet bestaat
+        int huidigJaar = java.time.LocalDate.now().getYear();
+        if (!jaren.contains(huidigJaar)) {
+            jaren.add(huidigJaar);
+        }
+
+        // Sorteer van nieuw naar oud
+        Collections.sort(jaren, Collections.reverseOrder());
+
+        return jaren;
+    }
+
+
+    // Updated checkRisico methode met correcte keys
     public Map<String, Object> checkRisico(int jaar) {
         Map<String, Object> result = new HashMap<>();
         List<Maand> data;
@@ -48,18 +85,20 @@ public class NeerslagService {
         double zomer = getMaanden(data, Arrays.asList(6, 7, 8));
         double herfst = getMaanden(data, Arrays.asList(9, 10, 11));
 
-        result.put("winter", winter > 300 ? "RISICO" : "OK");
-        result.put("lente", lente > 250 ? "RISICO" : "OK");
-        result.put("zomer", zomer > 260 ? "RISICO" : "OK");
-        result.put("herfst", herfst > 280 ? "RISICO" : "OK");
+        // Gebruik de juiste keys die de controller verwacht
+        result.put("winter", winter);
+        result.put("lente", lente);
+        result.put("zomer", zomer);
+        result.put("herfst", herfst);
 
-        result.put("winterMm", winter);
-        result.put("lenteMm", lente);
-        result.put("zomerMm", zomer);
-        result.put("herfstMm", herfst);
+        result.put("winterRisico", winter > 300 ? "GEVAAR!" : "OK");
+        result.put("lenteRisico", lente > 250 ? "GEVAAR!" : "OK");
+        result.put("zomerRisico", zomer > 260 ? "GEVAAR!" : "OK");
+        result.put("herfstRisico", herfst > 280 ? "GEVAAR!" : "OK");
 
         return result;
     }
+
 
     private List<Maand> getAPIDataAlsNeerslagList(int jaar) {
         List<Maand> apiData = new ArrayList<>();
@@ -79,7 +118,7 @@ public class NeerslagService {
                 totaal += n.getNeerslag();
             }
         }
-        return totaal;
+        return Math.round(totaal * 10.0) / 10.0; // Afronden op 1 decimaal
     }
 
     // Synchroniseer API data naar database
@@ -105,6 +144,7 @@ public class NeerslagService {
             }
         }
     }
+
 
     // Historische data laden
     public void laadData() {
