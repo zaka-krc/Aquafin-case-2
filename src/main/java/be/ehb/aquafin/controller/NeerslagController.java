@@ -17,13 +17,27 @@ public class NeerslagController {
     @Autowired
     private NeerslagService service;
 
+    @GetMapping("/")
+    public String index() {
+        return "redirect:/dashboard";
+    }
+
     @GetMapping("/dashboard")
     public String home(Model model) {
         service.laadData();
 
+        // Haal risico data op
         Map<String, Object> risico2024 = service.checkRisico(2024);
         model.addAttribute("risico", risico2024);
         model.addAttribute("jaar", 2024);
+
+        // Haal alle maandelijkse data op voor 2024
+        List<Maand> maanden2024 = service.getMaandenVoorJaar(2024);
+        model.addAttribute("maanden", maanden2024);
+
+        // Haal alle beschikbare jaren op
+        List<Integer> beschikbareJaren = service.getBeschikbareJaren();
+        model.addAttribute("beschikbareJaren", beschikbareJaren);
 
         return "dashboard";
     }
@@ -34,11 +48,21 @@ public class NeerslagController {
         model.addAttribute("risico", risico);
         model.addAttribute("jaar", jaar);
 
+        // Haal maandelijkse data op voor specifiek jaar
+        List<Maand> maanden = service.getMaandenVoorJaar(jaar);
+        model.addAttribute("maanden", maanden);
+
+        // Haal alle beschikbare jaren op
+        List<Integer> beschikbareJaren = service.getBeschikbareJaren();
+        model.addAttribute("beschikbareJaren", beschikbareJaren);
+
         return "dashboard";
     }
 
     @GetMapping("/voorspelling")
-    public String voorspelling() {
+    public String voorspelling(Model model) {
+        // Voeg het huidige jaar toe als default
+        model.addAttribute("huidigJaar", java.time.LocalDate.now().getYear());
         return "voorspelling";
     }
 
@@ -69,6 +93,12 @@ public class NeerslagController {
         String zomerRisico = zomer > 260 ? "GEVAAR!" : "OK";
         String herfstRisico = herfst > 280 ? "GEVAAR!" : "OK";
 
+        // Rond af op 1 decimaal
+        winter = Math.round(winter * 10.0) / 10.0;
+        lente = Math.round(lente * 10.0) / 10.0;
+        zomer = Math.round(zomer * 10.0) / 10.0;
+        herfst = Math.round(herfst * 10.0) / 10.0;
+
         model.addAttribute("jaar", jaar);
         model.addAttribute("winter", winter);
         model.addAttribute("lente", lente);
@@ -88,7 +118,12 @@ public class NeerslagController {
 
     @GetMapping("/data")
     public String data(Model model) {
-        model.addAttribute("alle", service.getAlle());
+        List<Maand> alleMaanden = service.getAlle();
+        model.addAttribute("alle", alleMaanden);
+
+        // Voeg statistieken toe
+        model.addAttribute("totaalRecords", alleMaanden.size());
+
         return "data";
     }
 
@@ -98,5 +133,16 @@ public class NeerslagController {
                           @RequestParam double neerslag) {
         service.save(new Maand(jaar, maand, neerslag));
         return "redirect:/data";
+    }
+
+    @PostMapping("/sync/{jaar}")
+    @ResponseBody
+    public String syncApiData(@PathVariable int jaar) {
+        try {
+            service.syncAPIData(jaar);
+            return "Sync voltooid voor jaar " + jaar;
+        } catch (Exception e) {
+            return "Fout bij synchroniseren: " + e.getMessage();
+        }
     }
 }
