@@ -11,19 +11,18 @@
     <!-- Header met logo en navigatie -->
     <header class="header">
         <div class="logo-container">
-            <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <path d="M30 40 Q40 20, 50 40 T70 40" stroke="#0099CC" stroke-width="4" fill="none"/>
-                <path d="M25 50 Q35 30, 45 50 T65 50" stroke="#0099CC" stroke-width="4" fill="none"/>
-                <path d="M35 60 Q45 40, 55 60 T75 60" stroke="#0099CC" stroke-width="4" fill="none"/>
-            </svg>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Logo_Aquafin.png/1280px-Logo_Aquafin.png"
+                 alt="Aquafin logo" class="logo" style="max-height: 60px;" />
             <h1>Aquafin</h1>
         </div>
+
         <nav class="nav-buttons">
             <a href="/data" class="nav-btn">Admin panel</a>
             <a href="/dashboard" class="nav-btn active">Dashboard</a>
             <a href="/voorspelling" class="nav-btn">Voorspelling</a>
         </nav>
     </header>
+
     <!-- Main content -->
     <main class="main-content">
         <!-- Jaar Section -->
@@ -31,23 +30,27 @@
             <h2 class="year-title" th:text="${jaar}">2024</h2>
             <p class="year-subtitle">Gemeten neerslag per seizoen</p>
 
-            <!-- Thymeleaf template for data rendering -->
-            <table>
-                <thead>
-                <tr>
-                    <th>Some Field</th>
-                    <th>Another Field</th>
-                    <!-- ...other headers... -->
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="item : ${apiData}">
-                    <td th:text="${item.someField}"></td>
-                    <td th:text="${item.anotherField}"></td>
-                    <!-- ...other fields... -->
-                </tr>
-                </tbody>
-            </table>
+            <!-- API Data Table -->
+            <div th:if="${apiData != null and !apiData.isEmpty()}" style="margin-bottom: 30px;">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Some Field</th>
+                        <th>Another Field</th>
+                        <!-- ...other headers... -->
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${apiData}">
+                        <td th:text="${item.someField}"></td>
+                        <td th:text="${item.anotherField}"></td>
+                        <!-- ...other fields... -->
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Seizoen Selector en Data -->
             <div class="data-grid">
                 <div class="season-selector">
                     <label>Seizoen</label>
@@ -72,68 +75,69 @@
                     <div class="table-row">
                         <span>Winter</span>
                     </div>
-                </div> <!-- ✅ Toegevoegd: ontbrekende afsluitende div -->
+                </div>
+            </div>
 
-                <div class="data-grid">
-                    <div class="season-selector">
-                        <label>Jaar selecteren</label>
-                        <select onchange="window.location.href='/jaar/' + this.value">
-                            <option th:value="${jaar}" th:text="${jaar}" selected>Huidig jaar</option>
-                            <option th:each="beschikbaarJaar : ${beschikbareJaren}"
-                                    th:if="${beschikbaarJaar != jaar}"
-                                    th:value="${beschikbaarJaar}"
-                                    th:text="${beschikbaarJaar}">Jaar</option>
-                        </select>
+            <!-- Jaar Selector en Risico Data -->
+            <div class="data-grid" style="margin-top: 30px;">
+                <div class="season-selector">
+                    <label>Jaar selecteren</label>
+                    <select onchange="window.location.href='/jaar/' + this.value">
+                        <option th:value="${jaar}" th:text="${jaar}" selected>Huidig jaar</option>
+                        <option th:each="beschikbaarJaar : ${beschikbareJaren}"
+                                th:if="${beschikbaarJaar != jaar}"
+                                th:value="${beschikbaarJaar}"
+                                th:text="${beschikbaarJaar}">Jaar</option>
+                    </select>
+                </div>
+
+                <div class="data-table highlighted">
+                    <div class="table-row">
+                        <span>Winter</span>
+                        <span th:text="${risico.winter} + ' mm'">0 mm</span>
+                        <span th:text="${risico.winterRisico}"
+                              th:style="${risico.winterRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green;'">OK</span>
                     </div>
-
-                    <div class="data-table highlighted">
-                        <div class="table-row">
-                            <span>Winter</span>
-                            <span th:text="${risico.winter} + ' mm'">0 mm</span>
-                            <span th:text="${risico.winterRisico}"
-                                  th:style="${risico.winterRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green;'">OK</span>
-                        </div>
-                        <div class="table-row">
-                            <span>Lente</span>
-                            <span th:text="${risico.lente} + ' mm'">0 mm</span>
-                            <span th:text="${risico.lenteRisico}"
-                                  th:style="${risico.lenteRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green;'">OK</span>
-                        </div>
-                        <div class="table-row">
-                            <span>Zomer</span>
-                            <span th:text="${risico.zomer} + ' mm'">0 mm</span>
-                            <span th:text="${risico.zomerRisico}"
-                                  th:style="${risico.zomerRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green;'">OK</span>
-                        </div>
-                        <div class="table-row">
-                            <span>Herfst</span>
-                            <span th:text="${risico.herfst} + ' mm'">0 mm</span>
-                            <span th:text="${risico.herfstRisico}"
-                                  th:style="${risico.herfstRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green;'">OK</span>
-                        </div>
+                    <div class="table-row">
+                        <span>Lente</span>
+                        <span th:text="${risico.lente} + ' mm'">0 mm</span>
+                        <span th:text="${risico.lenteRisico}"
+                              th:style="${risico.lenteRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green;'">OK</span>
                     </div>
-
-                    <div class="average-column">
-                        <div class="header">Risico Status</div>
-                        <div style="margin-top: 20px;">
-                            <p><strong>Grenswaarden:</strong></p>
-                            <p>Winter: >300mm</p>
-                            <p>Lente: >250mm</p>
-                            <p>Zomer: >260mm</p>
-                            <p>Herfst: >280mm</p>
-                        </div>
+                    <div class="table-row">
+                        <span>Zomer</span>
+                        <span th:text="${risico.zomer} + ' mm'">0 mm</span>
+                        <span th:text="${risico.zomerRisico}"
+                              th:style="${risico.zomerRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green;'">OK</span>
+                    </div>
+                    <div class="table-row">
+                        <span>Herfst</span>
+                        <span th:text="${risico.herfst} + ' mm'">0 mm</span>
+                        <span th:text="${risico.herfstRisico}"
+                              th:style="${risico.herfstRisico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green;'">OK</span>
                     </div>
                 </div>
 
-                <!-- Maandelijkse data -->
-                <div class="data-display" th:if="${maanden != null and !maanden.isEmpty()}">
-                    <h3 style="margin-top: 30px; margin-bottom: 20px;">Maandelijkse neerslag</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                        <div class="data-table" th:each="maand : ${maanden}">
-                            <div class="table-row">
-                                <span th:text="${maand.getMaandNaam()}">Maand</span>
-                                <span th:text="${maand.neerslag} + ' mm'">0 mm</span>
-                            </div>
+                <div class="average-column">
+                    <div class="header">Risico Status</div>
+                    <div style="margin-top: 20px;">
+                        <p><strong>Grenswaarden:</strong></p>
+                        <p>Winter: >300mm</p>
+                        <p>Lente: >250mm</p>
+                        <p>Zomer: >260mm</p>
+                        <p>Herfst: >280mm</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maandelijkse data -->
+            <div class="data-display" th:if="${maanden != null and !maanden.isEmpty()}">
+                <h3 style="margin-top: 30px; margin-bottom: 20px;">Maandelijkse neerslag</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div class="data-table" th:each="maand : ${maanden}">
+                        <div class="table-row">
+                            <span th:text="${maand.getMaandNaam()}">Maand</span>
+                            <span th:text="${maand.neerslag} + ' mm'">0 mm</span>
                         </div>
                     </div>
                 </div>

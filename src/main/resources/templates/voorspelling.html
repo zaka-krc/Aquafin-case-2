@@ -7,168 +7,162 @@
     <link rel="stylesheet" href="/aquafin-styles.css">
 </head>
 <body>
-<div class="container">
-    <!-- Header met logo en navigatie -->
-    <header class="header">
-        <div class="logo-container">
-            <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                <path d="M30 40 Q40 20, 50 40 T70 40" stroke="#0099CC" stroke-width="4" fill="none"/>
-                <path d="M25 50 Q35 30, 45 50 T65 50" stroke="#0099CC" stroke-width="4" fill="none"/>
-                <path d="M35 60 Q45 40, 55 60 T75 60" stroke="#0099CC" stroke-width="4" fill="none"/>
-            </svg>
-            <h1>Aquafin</h1>
-        </div>
-        <nav class="nav-buttons">
-            <a href="/data" class="nav-btn">Admin panel</a>
-            <a href="/dashboard" class="nav-btn">Dashboard</a>
-            <a href="/voorspelling" class="nav-btn active">Voorspelling</a>
-        </nav>
-    </header>
+<header>
+    <div class="logo-container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Logo_Aquafin.png/1280px-Logo_Aquafin.png"
+             alt="Aquafin logo" class="logo" style="max-height: 60px;" />
+        <h1>Aquafin</h1>
+    </div>
+    <nav class="nav-buttons">
+        <a href="/data" class="nav-btn">Admin panel</a>
+        <a href="/dashboard" class="nav-btn">Dashboard</a>
+        <a href="/voorspelling" class="nav-btn active">Voorspelling</a>
+    </nav>
+</header>
 
-    <!-- Main content -->
-    <main class="main-content">
-        <section class="year-section">
-            <h2 class="year-title">Neerslag Voorspelling 2025</h2>
-            <p class="year-subtitle">Bekijk maandelijkse voorspellingen gebaseerd op historische trends</p>
+<!-- Main content -->
+<main class="main-content">
+    <section class="year-section">
+        <h2 class="year-title">Neerslag Voorspelling 2025</h2>
+        <p class="year-subtitle">Bekijk maandelijkse voorspellingen gebaseerd op historische trends</p>
 
-            <!-- Maand Selectie -->
-            <div style="background-color: #f8f9fa; padding: 30px; border-radius: 10px; margin-bottom: 30px;">
-                <form method="GET" action="/voorspelling" style="max-width: 500px; margin: 0 auto;">
-                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: end;">
-                        <div>
-                            <label for="maand">Selecteer maand:</label>
-                            <select id="maand" name="maand" required
-                                    style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-                                <option value="0" th:selected="${selectedMaand == 0}">Alle maanden</option>
-                                <option value="1" th:selected="${selectedMaand == 1}">Januari</option>
-                                <option value="2" th:selected="${selectedMaand == 2}">Februari</option>
-                                <option value="3" th:selected="${selectedMaand == 3}">Maart</option>
-                                <option value="4" th:selected="${selectedMaand == 4}">April</option>
-                                <option value="5" th:selected="${selectedMaand == 5}">Mei</option>
-                                <option value="6" th:selected="${selectedMaand == 6}">Juni</option>
-                                <option value="7" th:selected="${selectedMaand == 7}">Juli</option>
-                                <option value="8" th:selected="${selectedMaand == 8}">Augustus</option>
-                                <option value="9" th:selected="${selectedMaand == 9}">September</option>
-                                <option value="10" th:selected="${selectedMaand == 10}">Oktober</option>
-                                <option value="11" th:selected="${selectedMaand == 11}">November</option>
-                                <option value="12" th:selected="${selectedMaand == 12}">December</option>
-                            </select>
-                        </div>
-                        <div>
-                            <button type="submit" class="simulation-btn">Toon Voorspelling</button>
-                        </div>
+        <!-- Maand Selectie -->
+        <div style="background-color: #f8f9fa; padding: 30px; border-radius: 10px; margin-bottom: 30px;">
+            <form method="GET" action="/voorspelling" style="max-width: 500px; margin: 0 auto;">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; align-items: end;">
+                    <div>
+                        <label for="maand">Selecteer maand:</label>
+                        <select id="maand" name="maand" required
+                                style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <option value="0" th:selected="${selectedMaand == 0}">Alle maanden</option>
+                            <option value="1" th:selected="${selectedMaand == 1}">Januari</option>
+                            <option value="2" th:selected="${selectedMaand == 2}">Februari</option>
+                            <option value="3" th:selected="${selectedMaand == 3}">Maart</option>
+                            <option value="4" th:selected="${selectedMaand == 4}">April</option>
+                            <option value="5" th:selected="${selectedMaand == 5}">Mei</option>
+                            <option value="6" th:selected="${selectedMaand == 6}">Juni</option>
+                            <option value="7" th:selected="${selectedMaand == 7}">Juli</option>
+                            <option value="8" th:selected="${selectedMaand == 8}">Augustus</option>
+                            <option value="9" th:selected="${selectedMaand == 9}">September</option>
+                            <option value="10" th:selected="${selectedMaand == 10}">Oktober</option>
+                            <option value="11" th:selected="${selectedMaand == 11}">November</option>
+                            <option value="12" th:selected="${selectedMaand == 12}">December</option>
+                        </select>
                     </div>
-                </form>
-            </div>
-
-            <!-- Voorspelling Resultaten -->
-            <div th:if="${voorspelling != null}">
-                <!-- Samenvatting -->
-                <div style="background-color: #e3f2fd; padding: 20px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
-                    <h3>Voorspelling voor 2025</h3>
-                    <p style="font-size: 18px; margin: 10px 0;">
-                        Gebaseerd op <strong th:text="${voorspelling['aantalJarenData']}">5</strong> jaar historische data
-                    </p>
-
-                    <!-- Alleen tonen als totaalJaar bestaat (bij alle maanden) -->
-                    <div th:if="${voorspelling['totaalJaar'] != null}" style="margin-top: 15px;">
-                        <p style="font-size: 20px; font-weight: bold;"
-                           th:style="${voorspelling['totaalJaarRisico'] == 'GEVAAR!'} ? 'color: red;' : 'color: green;'">
-                            Jaar risico: <span th:text="${voorspelling['totaalJaarRisico']}">OK</span>
-                        </p>
-                        <p style="font-size: 16px; color: #666;">
-                            Verwachte jaarneerslag: <strong th:text="${#numbers.formatDecimal(voorspelling['totaalJaar'], 1, 1)} + ' mm'">0.0 mm</strong>
-                        </p>
+                    <div>
+                        <button type="submit" class="simulation-btn">Toon Voorspelling</button>
                     </div>
                 </div>
+            </form>
+        </div>
 
-                <!-- Maandelijkse voorspellingen -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                    <div th:each="maandData : ${voorspelling['maanden']}"
-                         class="data-table"
-                         th:style="${maandData.risico == 'GEVAAR!'} ? 'border: 2px solid #ff6b6b; background-color: #fff5f5;' : ''">
-                        <h4 th:text="${maandData.naam}">Januari</h4>
+        <!-- Voorspelling Resultaten -->
+        <div th:if="${voorspelling != null}">
+            <!-- Samenvatting -->
+            <div style="background-color: #e3f2fd; padding: 20px; border-radius: 10px; margin-bottom: 30px; text-align: center;">
+                <h3>Voorspelling voor 2025</h3>
+                <p style="font-size: 18px; margin: 10px 0;">
+                    Gebaseerd op <strong th:text="${voorspelling['aantalJarenData']}">5</strong> jaar historische data
+                </p>
 
+                <!-- Alleen tonen als totaalJaar bestaat (bij alle maanden) -->
+                <div th:if="${voorspelling['totaalJaar'] != null}" style="margin-top: 15px;">
+                    <p style="font-size: 20px; font-weight: bold;"
+                       th:style="${voorspelling['totaalJaarRisico'] == 'GEVAAR!'} ? 'color: red;' : 'color: green;'">
+                        Jaar risico: <span th:text="${voorspelling['totaalJaarRisico']}">OK</span>
+                    </p>
+                    <p style="font-size: 16px; color: #666;">
+                        Verwachte jaarneerslag: <strong th:text="${#numbers.formatDecimal(voorspelling['totaalJaar'], 1, 1)} + ' mm'">0.0 mm</strong>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Maandelijkse voorspellingen -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                <div th:each="maandData : ${voorspelling['maanden']}"
+                     class="data-table"
+                     th:style="${maandData.risico == 'GEVAAR!'} ? 'border: 2px solid #ff6b6b; background-color: #fff5f5;' : ''">
+                    <h4 th:text="${maandData.naam}">Januari</h4>
+
+                    <div class="table-row">
+                        <span>Verwachte neerslag:</span>
+                        <span th:text="${#numbers.formatDecimal(maandData.voorspelling, 1, 1)} + ' mm'">0.0 mm</span>
+                    </div>
+
+                    <div class="table-row">
+                        <span>Historisch gemiddelde:</span>
+                        <span th:text="${#numbers.formatDecimal(maandData.gemiddelde, 1, 1)} + ' mm'">0.0 mm</span>
+                    </div>
+
+                    <div class="table-row">
+                        <span>Trend:</span>
+                        <span th:text="${maandData.trend}"
+                              th:style="${maandData.trend.contains('+') ? 'color: #ff6b6b;' : 'color: #4caf50;'}">+5%</span>
+                    </div>
+
+                    <div class="table-row">
+                        <span>Maandgrens:</span>
+                        <span th:text="${maandData.grenswaarde} + ' mm'">100 mm</span>
+                    </div>
+
+                    <div class="table-row">
+                        <span>Status:</span>
+                        <span th:text="${maandData.risico}"
+                              th:style="${maandData.risico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green; font-weight: bold;'">OK</span>
+                    </div>
+
+                    <div class="table-row" th:if="${maandData.seizoen != null}">
+                        <span>Seizoen:</span>
+                        <span th:text="${maandData.seizoen}">Winter</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seizoensoverzicht (alleen als seizoenen bestaat) -->
+            <div th:if="${voorspelling['seizoenen'] != null}" style="margin-top: 30px;">
+                <h3>Seizoensoverzicht 2025</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div class="data-table" th:each="seizoen : ${voorspelling['seizoenen']}">
+                        <h4 th:text="${seizoen.naam}">Winter</h4>
                         <div class="table-row">
-                            <span>Verwachte neerslag:</span>
-                            <span th:text="${#numbers.formatDecimal(maandData.voorspelling, 1, 1)} + ' mm'">0.0 mm</span>
+                            <span>Totaal verwacht:</span>
+                            <span th:text="${#numbers.formatDecimal(seizoen.totaal, 1, 1)} + ' mm'">0.0 mm</span>
                         </div>
-
                         <div class="table-row">
-                            <span>Historisch gemiddelde:</span>
-                            <span th:text="${#numbers.formatDecimal(maandData.gemiddelde, 1, 1)} + ' mm'">0.0 mm</span>
+                            <span>Seizoensgrens:</span>
+                            <span th:text="${seizoen.grenswaarde} + ' mm'">300 mm</span>
                         </div>
-
-                        <div class="table-row">
-                            <span>Trend:</span>
-                            <span th:text="${maandData.trend}"
-                                  th:style="${maandData.trend.contains('+') ? 'color: #ff6b6b;' : 'color: #4caf50;'}">+5%</span>
-                        </div>
-
-                        <div class="table-row">
-                            <span>Maandgrens:</span>
-                            <span th:text="${maandData.grenswaarde} + ' mm'">100 mm</span>
-                        </div>
-
                         <div class="table-row">
                             <span>Status:</span>
-                            <span th:text="${maandData.risico}"
-                                  th:style="${maandData.risico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green; font-weight: bold;'">OK</span>
-                        </div>
-
-                        <div class="table-row" th:if="${maandData.seizoen != null}">
-                            <span>Seizoen:</span>
-                            <span th:text="${maandData.seizoen}">Winter</span>
+                            <span th:text="${seizoen.risico}"
+                                  th:style="${seizoen.risico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green; font-weight: bold;'">OK</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Seizoensoverzicht (alleen als seizoenen bestaat) -->
-                <div th:if="${voorspelling['seizoenen'] != null}" style="margin-top: 30px;">
-                    <h3>Seizoensoverzicht 2025</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                        <div class="data-table" th:each="seizoen : ${voorspelling['seizoenen']}">
-                            <h4 th:text="${seizoen.naam}">Winter</h4>
-                            <div class="table-row">
-                                <span>Totaal verwacht:</span>
-                                <span th:text="${#numbers.formatDecimal(seizoen.totaal, 1, 1)} + ' mm'">0.0 mm</span>
-                            </div>
-                            <div class="table-row">
-                                <span>Seizoensgrens:</span>
-                                <span th:text="${seizoen.grenswaarde} + ' mm'">300 mm</span>
-                            </div>
-                            <div class="table-row">
-                                <span>Status:</span>
-                                <span th:text="${seizoen.risico}"
-                                      th:style="${seizoen.risico == 'GEVAAR!'} ? 'color: red; font-weight: bold;' : 'color: green; font-weight: bold;'">OK</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Analyse informatie -->
-                <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 30px;">
-                    <h4>Voorspellingsmethode</h4>
-                    <p>Deze voorspelling is gebaseerd op:</p>
-                    <ul>
-                        <li>Historische maandelijkse neerslagdata van 2020-2024</li>
-                        <li>Trendanalyse per maand met lineaire regressie</li>
-                        <li>Seizoensgebonden patronen en variaties</li>
-                        <li>Maandelijkse grenswaarden gebaseerd op seizoensnormen</li>
-                    </ul>
-                    <p style="margin-top: 15px; font-style: italic; color: #666;">
-                        <strong>Let op:</strong> Dit is een statistische voorspelling. Werkelijke neerslag kan afwijken door
-                        klimatologische variaties en extreme weersomstandigheden.
-                    </p>
-                </div>
             </div>
 
-            <!-- Geen data bericht -->
-            <div th:if="${voorspelling == null}" style="text-align: center; padding: 40px; color: #666;">
-                <p>Selecteer een maand om de voorspelling te bekijken.</p>
+            <!-- Analyse informatie -->
+            <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 30px;">
+                <h4>Voorspellingsmethode</h4>
+                <p>Deze voorspelling is gebaseerd op:</p>
+                <ul>
+                    <li>Historische maandelijkse neerslagdata van 2020-2024</li>
+                    <li>Trendanalyse per maand met lineaire regressie</li>
+                    <li>Seizoensgebonden patronen en variaties</li>
+                    <li>Maandelijkse grenswaarden gebaseerd op seizoensnormen</li>
+                </ul>
+                <p style="margin-top: 15px; font-style: italic; color: #666;">
+                    <strong>Let op:</strong> Dit is een statistische voorspelling. Werkelijke neerslag kan afwijken door
+                    klimatologische variaties en extreme weersomstandigheden.
+                </p>
             </div>
-        </section>
-    </main>
-</div>
+        </div>
+
+        <!-- Geen data bericht -->
+        <div th:if="${voorspelling == null}" style="text-align: center; padding: 40px; color: #666;">
+            <p>Selecteer een maand om de voorspelling te bekijken.</p>
+        </div>
+    </section>
+</main>
 </body>
 </html>
