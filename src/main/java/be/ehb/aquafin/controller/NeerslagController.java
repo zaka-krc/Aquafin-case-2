@@ -19,7 +19,7 @@ public class NeerslagController {
 
     @GetMapping("/")
     public String index() {
-        return "redirect:/dashboard";
+        return "redirect:/voorspelling";
     }
 
     @GetMapping("/dashboard")
