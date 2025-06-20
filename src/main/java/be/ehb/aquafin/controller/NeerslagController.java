@@ -17,6 +17,11 @@ public class NeerslagController {
     @Autowired
     private NeerslagService service;
 
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
     @GetMapping("/")
     public String index() {
         return "redirect:/voorspelling";
