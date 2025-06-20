@@ -171,6 +171,39 @@ button:hover,
     background: #007aa3;
 }
 
+/* Versie 1: Gradient button */
+.logout-btn {
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.1) 100%);
+    backdrop-filter: blur(10px);
+}
+
+/* Versie 2: Met rode accent bij hover */
+.logout-btn:hover {
+    background-color: rgba(220, 53, 69, 0.9);
+    border-color: rgba(220, 53, 69, 1);
+}
+
+/* Versie 3: Met icon (gebruikt Font Awesome als je dat hebt) */
+.logout-btn::before {
+    content: "↪";  /* of gebruik: ⮌ ⏻ ⊙ ◉ */
+    margin-right: 6px;
+}
+
+/* Versie 4: Pill style */
+.logout-btn {
+    padding: 6px 18px;
+    font-size: 13px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: var(--aquafin-primary);
+    border: none;
+}
+
+.logout-btn:hover {
+    background-color: white;
+    color: var(--aquafin-danger);
+}
+
+
 /* Dropdown */
 .maand-dropdown {
     padding: 8px 15px;

@@ -26,7 +26,7 @@ public class SecurityConfig {
             )
             .formLogin((form) -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/dashboard", true)
+                .defaultSuccessUrl("/voorspelling", true)
                 .permitAll()
             )
             .logout((logout) -> logout
