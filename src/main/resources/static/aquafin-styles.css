@@ -194,13 +194,13 @@ button:hover,
     padding: 6px 18px;
     font-size: 13px;
     background-color: rgba(255, 255, 255, 0.9);
-    color: var(--aquafin-primary);
+    color: white;
     border: none;
 }
 
 .logout-btn:hover {
     background-color: white;
-    color: var(--aquafin-danger);
+    color: black;
 }
 
 
