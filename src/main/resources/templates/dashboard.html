@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="nl" xmlns:th="http://www.thymeleaf.org">
+<html lang="nl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,9 +16,13 @@
         </div>
 
         <nav class="nav-buttons">
-            <a href="/data" class="nav-btn">Admin panel</a>
+            <a href="/data" class="nav-btn" sec:authorize="hasRole('ADMIN')">Admin panel</a>
             <a href="/dashboard" class="nav-btn active">Dashboard</a>
             <a href="/voorspelling" class="nav-btn">Voorspelling</a>
+            <span style="margin-left: 20px; color: #666;">
+        <span sec:authentication="name">Gebruiker</span>
+        | <a href="/logout" style="color: #0066cc;">Uitloggen</a>
+        </span>
         </nav>
     </header>
 
