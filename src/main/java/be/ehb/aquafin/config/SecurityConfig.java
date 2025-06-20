@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -20,37 +19,36 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/aquafin-styles.css", "/login").permitAll()
-                        .requestMatchers("/data", "/data/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
-                .formLogin((form) -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard", true)
-                        .permitAll()
-                )
-                .logout((logout) -> logout
-                        .logoutSuccessUrl("/login?logout")
-                        .permitAll()
-                );
-
+            .authorizeHttpRequests((requests) -> requests
+                .requestMatchers("/aquafin-styles.css", "/login").permitAll()
+                .requestMatchers("/data", "/data/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .formLogin((form) -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/dashboard", true)
+                .permitAll()
+            )
+            .logout((logout) -> logout
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
+            );
         return http.build();
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
+    public UserDetailsService userDetailsService(PasswordEncoder encoder) {
         UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder().encode("admin123"))
-                .roles("ADMIN")
-                .build();
+            .username("admin")
+            .password(encoder.encode("admin123"))
+            .roles("ADMIN")
+            .build();
 
         UserDetails technieker = User.builder()
-                .username("tech")
-                .password(passwordEncoder().encode("tech123"))
-                .roles("TECHNIEKER")
-                .build();
+            .username("tech")
+            .password(encoder.encode("tech123"))
+            .roles("TECHNIEKER")
+            .build();
 
         return new InMemoryUserDetailsManager(admin, technieker);
     }
